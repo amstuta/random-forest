@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import csv
+import CSVReader
 from math import log
 
 
@@ -125,22 +125,13 @@ class DecisionTreeClassifier:
 
 
 def test_tree():
-    with open("../scala/data/income.csv") as fd:
-        reader = csv.reader(fd, delimiter=',')
-        data = []
+    data = CSVReader.read_csv("../scala/data/income.csv")
+    tree = DecisionTreeClassifier()
+    tree.fit(data)
 
-        for row in reader:
-            row = [int(row[0]), row[1], row[2], int(row[3]), row[4], \
-                   row[5], row[6], row[7], row[8], int(row[9]), \
-                   int(row[10]), int(row[11]), row[12], row[13]]
-            data.append(list(map(lambda x: x.strip() if isinstance(x, str) else x, row)))
-        
-        tree = DecisionTreeClassifier()
-        tree.fit(data)
-
-        print(tree.predict([39, 'State-gov', 'Bachelors', 13, 'Never-married', \
-                            'Adm-clerical', 'Not-in-family', 'White', 'Male', \
-                            2174, 0, 40, 'United-States']))
+    print(tree.predict([39, 'State-gov', 'Bachelors', 13, 'Never-married', \
+                        'Adm-clerical', 'Not-in-family', 'White', 'Male', \
+                        2174, 0, 40, 'United-States']))
 
 
 if __name__=='__main__':

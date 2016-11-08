@@ -3,6 +3,7 @@
 import logging
 import random
 
+import CSVReader
 from DecisionTree import DecisionTreeClassifier
 
 
@@ -10,8 +11,8 @@ from DecisionTree import DecisionTreeClassifier
 TODO: - add arguments to tree (max_depth, criterion)
       - add same arguments to random forest
       - implement a thread pool to fit multiple trees at the same time
-      - add class CSVReader
       - comment functions
+      - set code to PEP8 norm
       - unittests
 """
 
@@ -37,6 +38,7 @@ class RandomForestClassifier(object):
 
 if __name__=='__main__':
     logging.basicConfig(level=logging.INFO)
-    
-    rf = RandomForestClassifier(30, 600)
-    #rf.fit(None)
+
+    data = CSVReader.read_csv("../scala/data/income.csv")
+    rf = RandomForestClassifier(2, 10)
+    rf.fit(data)
