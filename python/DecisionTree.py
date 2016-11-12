@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import CSVReader
-from math import log
+import random
+from math import log, sqrt
 
 
 class DecisionTreeClassifier:
@@ -16,17 +17,59 @@ class DecisionTreeClassifier:
             self.fb = fb
 
 
-    def __init__(self):
+    """
+    :param  random_features:    If False, all the features will be used to train
+                                and predict. Otherwise, a random set of size
+                                sqrt(nb features) will be chosen in the features.
+                                Usually, this option is used in a random forest.
+    """
+    def __init__(self, random_features=False):
         self.rootNode = None
 
+        self.features_indexes = []
+        self.random_features = random_features
 
+
+    """
+    :param  rows:       The data used to rain the decision tree. It must be a
+                        list of lists. The last vaue of each inner list is the
+                        value to predict.
+    :param  criterion:  The function used to split data at each node of the tree
+                        If None, the criterion used is entropy.
+    """
     def fit(self, rows, criterion=None):
+        if len(rows) < 1:
+            raise ValueError("Not enough samples in the given dataset")
+
         if not criterion: criterion = self.entropy
+        if self.random_features:
+            self.features_indexes = self.choose_random_features(rows[0])
+            rows = [self.get_features_subset(row) + [row[-1]] for row in rows]
         self.rootNode = self.buildTree(rows, criterion)
 
 
-    def predict(self, observation):
-        return self.classify(observation, self.rootNode)
+    def predict(self, features):
+        if self.random_features:
+            if not all(i in range(len(features)) for i in self.features_indexes):
+                raise ValueError("The given features don't match the training set")
+            features = self.get_features_subset(features)
+
+        return self.classify(features, self.rootNode)
+
+
+    """
+    Randomly selects indexes in the given list.
+    """
+    def choose_random_features(self, row):
+        nb_features = len(row) - 1
+        return random.sample(range(nb_features), int(sqrt(nb_features)))
+
+
+    """
+    Returns the randomly selected values in the given features
+    """
+    def get_features_subset(self, row):
+        return [row[i] for i in self.features_indexes]
 
 
     def divideSet(self, rows, column, value):
@@ -94,7 +137,7 @@ class DecisionTreeClassifier:
 
     def classify(self, observation, tree):
         if tree.results != None:
-            return tree.results
+            return list(tree.results.keys())[0]
         else:
             v = observation[tree.col]
             branch = None
@@ -110,7 +153,7 @@ class DecisionTreeClassifier:
 
 def test_tree():
     data = CSVReader.read_csv("../scala/data/income.csv")
-    tree = DecisionTreeClassifier()
+    tree = DecisionTreeClassifier(random_features=True)
     tree.fit(data)
 
     print(tree.predict([39, 'State-gov', 'Bachelors', 13, 'Never-married', \

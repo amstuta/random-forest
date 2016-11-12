@@ -19,7 +19,7 @@ TODO: - add arguments to tree (max_depth, criterion)
 
 class RandomForestClassifier(object):
 
-    def __init_(self, nb_trees, nb_samples):
+    def __init__(self, nb_trees, nb_samples):
         self.trees = []
         self.nb_trees = nb_trees
         self.nb_samples = nb_samples
@@ -45,9 +45,18 @@ class RandomForestClassifier(object):
         return max(set(predictions), key=predictions.count)
 
 
+def test_rf():
+    # random_split the features & log error rate
+    pass
+
+
 if __name__=='__main__':
     logging.basicConfig(level=logging.INFO)
 
     data = CSVReader.read_csv("../scala/data/income.csv")
-    rf = RandomForestClassifier(2, 10)
+    rf = RandomForestClassifier(30, 1000)
     rf.fit(data)
+
+    print(rf.predict([39, 'State-gov', 'Bachelors', 13, 'Never-married', \
+                    'Adm-clerical', 'Not-in-family', 'White', 'Male', \
+                    2174, 0, 40, 'United-States']))
