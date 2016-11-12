@@ -50,6 +50,10 @@ class DecisionTreeClassifier:
         self.rootNode = self.buildTree(rows, criterion, self.max_depth)
 
 
+    """
+    Returns a prediction for the given features.
+    :param  features:   A list of values
+    """
     def predict(self, features):
         if self.random_features:
             if not all(i in range(len(features)) for i in self.features_indexes):
@@ -74,6 +78,12 @@ class DecisionTreeClassifier:
         return [row[i] for i in self.features_indexes]
 
 
+    """
+    Divides the given dataset depending on the value at the given column index.
+    :param  rows:   The dataset
+    :param  column: The index of the column used to split data
+    :param  value:  The value used for the split
+    """
     def divideSet(self, rows, column, value):
        split_function = None
        if isinstance(value, int) or isinstance(value, float):
@@ -83,9 +93,14 @@ class DecisionTreeClassifier:
 
        set1 = [row for row in rows if split_function(row)]
        set2 = [row for row in rows if not split_function(row)]
+
        return set1, set2
 
 
+    """
+    Returns the occurence of each result in the given dataset.
+    :param  rows:   A list of lists with the output at the last index of each one
+    """
     def uniqueCounts(self, rows):
         results = {}
         for row in rows:
@@ -95,6 +110,10 @@ class DecisionTreeClassifier:
         return results
 
 
+    """
+    Returns the entropy in the given rows.
+    :param  rows:   A list of lists with the output at the last index of each one
+    """
     def entropy(self, rows):
        log2 = lambda x:log(x) / log(2)
        results = self.uniqueCounts(rows)
@@ -105,6 +124,14 @@ class DecisionTreeClassifier:
        return ent
 
 
+    """
+    Recursively creates the decision tree by splitting the dataset until no gain
+    of information is added, or until the max depth is reached.
+    :param  rows:   The dataset
+    :param  scoref: The function used to calculate the best split and stop
+                    condition
+    :param  depth:  The current depth in the tree
+    """
     def buildTree(self, rows, scoref, depth):
         if len(rows) == 0: return self.DecisionNode()
         if depth == 0: return self.DecisionNode(results=self.uniqueCounts(rows))
@@ -138,6 +165,11 @@ class DecisionTreeClassifier:
             return self.DecisionNode(results=self.uniqueCounts(rows))
 
 
+    """
+    Makes a prediction using the given features.
+    :param  observation:    The features to use to predict
+    :param  tree:           The current node
+    """
     def classify(self, observation, tree):
         if tree.results != None:
             return list(tree.results.keys())[0]

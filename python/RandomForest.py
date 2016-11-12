@@ -19,6 +19,11 @@ TODO: - add arguments to tree (max_depth, criterion)
 
 class RandomForestClassifier(object):
 
+    """
+    :param  nb_trees:   Number of decision trees to use
+    :param  nb_samples: Number of samples to give to each tree
+    :param  max_depth:  Maximum depth of the trees
+    """
     def __init__(self, nb_trees, nb_samples, max_depth=-1):
         self.trees = []
         self.nb_trees = nb_trees
@@ -26,6 +31,11 @@ class RandomForestClassifier(object):
         self.max_depth = max_depth
 
 
+    """
+    Trains self.nb_trees number of decision trees.
+    :param  data:   A list of lists with the last element of each list being
+                    the value to predict
+    """
     def fit(self, data):
         for i in range(self.nb_trees):
             logging.info('Training tree {}'.format(i + 1))
@@ -37,6 +47,11 @@ class RandomForestClassifier(object):
             self.trees.append(tree)
 
 
+    """
+    Returns a prediction for the given feature. The result is the value that
+    gets the most votes.
+    :param  feature:    The features used to predict
+    """
     def predict(self, feature):
         predictions = []
 
