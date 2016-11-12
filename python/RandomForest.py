@@ -19,10 +19,11 @@ TODO: - add arguments to tree (max_depth, criterion)
 
 class RandomForestClassifier(object):
 
-    def __init__(self, nb_trees, nb_samples):
+    def __init__(self, nb_trees, nb_samples, max_depth=-1):
         self.trees = []
         self.nb_trees = nb_trees
         self.nb_samples = nb_samples
+        self.max_depth = max_depth
 
 
     def fit(self, data):
@@ -30,7 +31,7 @@ class RandomForestClassifier(object):
             logging.info('Training tree {}'.format(i + 1))
 
             random_features = random.sample(data, self.nb_samples)
-            tree = DecisionTreeClassifier()
+            tree = DecisionTreeClassifier(max_depth=self.max_depth)
             tree.fit(random_features)
 
             self.trees.append(tree)

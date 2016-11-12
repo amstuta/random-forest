@@ -18,14 +18,15 @@ class DecisionTreeClassifier:
 
 
     """
+    :param  max_depth:          Maximum number of splits during training
     :param  random_features:    If False, all the features will be used to train
                                 and predict. Otherwise, a random set of size
                                 sqrt(nb features) will be chosen in the features.
                                 Usually, this option is used in a random forest.
     """
-    def __init__(self, random_features=False):
+    def __init__(self, max_depth=-1, random_features=False):
         self.rootNode = None
-
+        self.max_depth = max_depth
         self.features_indexes = []
         self.random_features = random_features
 
@@ -45,7 +46,8 @@ class DecisionTreeClassifier:
         if self.random_features:
             self.features_indexes = self.choose_random_features(rows[0])
             rows = [self.get_features_subset(row) + [row[-1]] for row in rows]
-        self.rootNode = self.buildTree(rows, criterion)
+
+        self.rootNode = self.buildTree(rows, criterion, self.max_depth)
 
 
     def predict(self, features):
@@ -103,10 +105,11 @@ class DecisionTreeClassifier:
        return ent
 
 
-    def buildTree(self, rows, scoref):
+    def buildTree(self, rows, scoref, depth):
         if len(rows) == 0: return self.DecisionNode()
-        current_score = scoref(rows)
+        if depth == 0: return self.DecisionNode(results=self.uniqueCounts(rows))
 
+        current_score = scoref(rows)
         best_gain = 0.0
         best_criteria = None
         best_sets = None
@@ -127,8 +130,8 @@ class DecisionTreeClassifier:
                     best_sets = (set1, set2)
 
         if best_gain > 0:
-            trueBranch = self.buildTree(best_sets[0], scoref)
-            falseBranch = self.buildTree(best_sets[1], scoref)
+            trueBranch = self.buildTree(best_sets[0], scoref, depth - 1)
+            falseBranch = self.buildTree(best_sets[1], scoref, depth - 1)
             return self.DecisionNode(col=best_criteria[0],value=best_criteria[1],
                                     tb=trueBranch,fb=falseBranch)
         else:
