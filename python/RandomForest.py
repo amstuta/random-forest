@@ -45,18 +45,28 @@ class RandomForestClassifier(object):
         return max(set(predictions), key=predictions.count)
 
 
+
 def test_rf():
-    # random_split the features & log error rate
-    pass
+    from sklearn.model_selection import train_test_split
+
+    data = CSVReader.read_csv("../scala/data/income.csv")
+    train, test = train_test_split(data, test_size=0.3)
+
+    rf = RandomForestClassifier(nb_trees=60, nb_samples=1000)
+    rf.fit(train)
+
+    errors = 0
+    features = [ft[:-1] for ft in test]
+    values = [ft[-1] for ft in test]
+
+    for feature, value in zip(features, values):
+        prediction = rf.predict(feature)
+        if prediction != value:
+            errors += 1
+
+    logging.info("Error rate: {}".format(errors / len(features) * 100))
 
 
 if __name__=='__main__':
     logging.basicConfig(level=logging.INFO)
-
-    data = CSVReader.read_csv("../scala/data/income.csv")
-    rf = RandomForestClassifier(30, 1000)
-    rf.fit(data)
-
-    print(rf.predict([39, 'State-gov', 'Bachelors', 13, 'Never-married', \
-                    'Adm-clerical', 'Not-in-family', 'White', 'Male', \
-                    2174, 0, 40, 'United-States']))
+    test_rf()
