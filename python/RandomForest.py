@@ -8,8 +8,9 @@ from DecisionTree import DecisionTreeClassifier
 
 
 """
-TODO: - implement a thread pool to fit multiple trees at the same time
-      - unittests
+TODO:   - add param size of feature selection in tree
+        - implement a thread pool to fit multiple trees at the same time
+        - unittests
 """
 
 
@@ -61,7 +62,7 @@ def test_rf():
     data = CSVReader.read_csv("../scala/data/income.csv")
     train, test = train_test_split(data, test_size=0.3)
 
-    rf = RandomForestClassifier(nb_trees=60, nb_samples=1000)
+    rf = RandomForestClassifier(nb_trees=60, nb_samples=3000)
     rf.fit(train)
 
     errors = 0
