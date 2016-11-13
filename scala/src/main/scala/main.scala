@@ -1,5 +1,6 @@
 import io.Source
 import com.tree.DecisionTreeClassifier
+import com.ensemble.RandomForestClassifier
 
 
 object Main {
@@ -17,22 +18,27 @@ object Main {
     val trTargets = train.map { data => data.last }.filter(!_.isEmpty)
     val teTargets = test.map { data => data.last }.filter(!_.isEmpty)
 
-    val tree = new DecisionTreeClassifier(maxDepth=20)
-    tree.fit(trFeatures, trTargets)
+    val rf = new RandomForestClassifier(20, 10)
+    rf.fit(trFeatures, trTargets)
 
-    val error = teFeatures.zip(teTargets).map {
-      case (f,t) =>
-        val predicted = tree.predict(f)
-        println(s"${f}, ${t} => ${predicted}")
-        println(predicted)
-        t == predicted
-    }.filter(!_).length
+    println(rf.predict(teFeatures.head))
 
-    println(tree)
+    // val tree = new DecisionTreeClassifier(maxDepth=20)
+    // tree.fit(trFeatures, trTargets)
 
-    println("************")
-    println(s"Error rate: ${error.toDouble / teTargets.length * 100}")
-    println("************")
+    // val error = teFeatures.zip(teTargets).map {
+    //   case (f,t) =>
+    //     val predicted = tree.predict(f)
+    //     println(s"${f}, ${t} => ${predicted}")
+    //     println(predicted)
+    //     t == predicted
+    // }.filter(!_).length
+    //
+    // println(tree)
+    //
+    // println("************")
+    // println(s"Error rate: ${error.toDouble / teTargets.length * 100}")
+    // println("************")
 
   }
 
