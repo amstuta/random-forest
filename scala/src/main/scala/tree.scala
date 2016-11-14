@@ -1,5 +1,7 @@
 package com.tree
 
+import scala.util.Random
+
 
 /* Types used in this package */
 package object Types {
@@ -22,8 +24,9 @@ private[tree] object MathUtil {
  * @param maxDepth  If set, sets a limit of depth for the tree
  */
 private[tree] case class TreeParameters(
-  criteria: String,
-  maxDepth: Int
+  criterion: String,
+  maxDepth: Int,
+  randomFeatures: Boolean
 )
 
 
@@ -65,17 +68,21 @@ sealed case class Split(
  * Decision tree used for classification. Accepts any number of inputs and
  * predicts a class (represented by a string).
  */
-class DecisionTreeClassifier(criteria: String = "entropy", maxDepth: Int = -1)
- extends TreeParameters(criteria, maxDepth) {
+class DecisionTreeClassifier(criterion: String = "entropy",
+                             maxDepth: Int = -1,
+                             randomFeatures: Boolean = false)
+ extends TreeParameters(criterion, maxDepth, randomFeatures) {
 
 
   private var rootNode: Option[DecisionNode] = None
   private var targetsHashes: Map[Any, Int] = Map.empty
+  private var featuresIndexes: List[Int] = List.empty
 
-  private def splitter(x: List[Int]) = criteria match {
+
+  private def splitter(x: List[Int]) = criterion match {
     case "entropy" => entropy(x)
     case "gini"    => gini(x)
-    case _         => throw new IllegalArgumentException(s"Unknown criteria '${criteria}'")
+    case _         => throw new IllegalArgumentException(s"Unknown criterion '${criterion}'")
   }
 
 
@@ -87,9 +94,22 @@ class DecisionTreeClassifier(criteria: String = "entropy", maxDepth: Int = -1)
    * @param targets   List containing the target values matching the inputs
    */
   def fit(features: Types.Features, targets: List[String]) = {
+    if (features.isEmpty) {
+      throw new IllegalArgumentException("Empty list of features")
+    }
+
     targetsHashes = hashTargets(targets)
     val intTargs = targets map { t => targetsHashes(t) }
-    rootNode = Some(buildTree(features, intTargs, maxDepth))
+
+    randomFeatures match {
+      case true  =>
+        featuresIndexes = chooseFeaturesIndexes(features(0))
+        val randFeatures = features map { f => filterFeatures(f) }
+        rootNode = Some(buildTree(randFeatures, intTargs, maxDepth))
+
+      case false =>
+        rootNode = Some(buildTree(features, intTargs, maxDepth))
+    }
   }
 
 
@@ -103,13 +123,39 @@ class DecisionTreeClassifier(criteria: String = "entropy", maxDepth: Int = -1)
   def predict(feat: List[Any]) =
     rootNode match {
       case Some(s)  =>
-        val predicted = classify(feat, s)
+        val predicted = randomFeatures match {
+          case true  => classify(filterFeatures(feat), s)
+          case false => classify(feat, s)
+        }
+
         targetFromHash(predicted) match {
           case Some(r) => r
           case None    => throw new NoSuchFieldException("Internal error")
         }
       case None     => throw new IllegalStateException("Model not trained")
     }
+
+
+  /**
+   * Randomly chooses the indexes of the features to use in this tree.
+   * @param feat  A feature set
+   * @return      A List containing the indexes to use
+   * TODO: make size of sample configurable
+   */
+  private def chooseFeaturesIndexes(feat: List[Any]) = {
+    Random.shuffle(0 to feat.length).take(feat.length / 2).toList
+  }
+
+
+  /**
+   * Returns a list containing only the features at the indexes contained
+   * in featuresIndexes.
+   * @param feat  A feature set
+   * @return      A subset of the original features
+   */
+  private def filterFeatures(feat: List[Any]) = {
+    featuresIndexes map { i => feat(i) }
+  }
 
 
   /**

@@ -18,27 +18,25 @@ object Main {
     val trTargets = train.map { data => data.last }.filter(!_.isEmpty)
     val teTargets = test.map { data => data.last }.filter(!_.isEmpty)
 
-    val rf = new RandomForestClassifier(20, 10)
+    val rf = new RandomForestClassifier(30, 3000)
     rf.fit(trFeatures, trTargets)
-
-    println(rf.predict(teFeatures.head))
 
     // val tree = new DecisionTreeClassifier(maxDepth=20)
     // tree.fit(trFeatures, trTargets)
 
-    // val error = teFeatures.zip(teTargets).map {
-    //   case (f,t) =>
-    //     val predicted = tree.predict(f)
-    //     println(s"${f}, ${t} => ${predicted}")
-    //     println(predicted)
-    //     t == predicted
-    // }.filter(!_).length
-    //
+    val error = teFeatures.zip(teTargets).map {
+      case (f,t) =>
+        val predicted = rf.predict(f) //tree.predict(f)
+        println(s"${f}, ${t} => ${predicted}")
+        println(predicted)
+        t == predicted
+    }.filter(!_).length
+
     // println(tree)
-    //
-    // println("************")
-    // println(s"Error rate: ${error.toDouble / teTargets.length * 100}")
-    // println("************")
+
+    println("************")
+    println(s"Error rate: ${error.toDouble / teTargets.length * 100}")
+    println("************")
 
   }
 
