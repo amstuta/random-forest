@@ -11,7 +11,12 @@ class RandomForestClassifier(protected val nbTrees: Int,
 
   protected val trees = MMap[Int, DecisionTreeClassifier]()
 
-
+  /**
+   * Trains a random forest classifier using the iven dataset.
+   *
+   * @param features  List of Lists containing the input variables
+   * @param targets   List of outputs corresponding to the given features
+   */
   def fit(features: Types.Features, targets: List[String]) = {
     0 to nbTrees foreach { i =>
       println(s"Training tree ${i}")
@@ -27,7 +32,13 @@ class RandomForestClassifier(protected val nbTrees: Int,
     }
   }
 
-
+  /**
+   * Makes a prediction using the previously trained trees and the given
+   * feature. It uses the "max votes" technique.
+   *
+   * @param feature A List containing the feature to make a prediction for
+   * @return        The prediction (String)
+   */
   def predict(feature: List[Any]) = {
     trees
       .values
