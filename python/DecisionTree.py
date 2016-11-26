@@ -190,7 +190,7 @@ class DecisionTreeClassifier:
 
 
 def test_tree():
-    data = CSVReader.read_csv("../scala/data/income.csv")
+    data = CSVReader.read_csv("../data/income.csv")
     tree = DecisionTreeClassifier(random_features=True)
     tree.fit(data)
 

@@ -8,12 +8,6 @@ import CSVReader
 from DecisionTree import DecisionTreeClassifier
 
 
-"""
-TODO:   - add param size of feature selection in tree
-        - unittests
-"""
-
-
 class RandomForestClassifier(object):
 
     """
@@ -68,7 +62,7 @@ class RandomForestClassifier(object):
 def test_rf():
     from sklearn.model_selection import train_test_split
 
-    data = CSVReader.read_csv("../scala/data/income.csv")
+    data = CSVReader.read_csv("../data/income.csv")
     train, test = train_test_split(data, test_size=0.3)
 
     rf = RandomForestClassifier(nb_trees=60, nb_samples=3000, max_workers=4)

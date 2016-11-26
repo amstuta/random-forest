@@ -2,6 +2,10 @@ import csv
 
 
 def read_csv(filepath):
+    """
+    This function reads the example dataset from a CSV file and returns a
+    list of lists.
+    """
     data = []
 
     with open(filepath) as fd:
