@@ -4,10 +4,6 @@ import scala.util.Random
 import scala.collection.mutable.{Map => MMap}
 import com.tree.{DecisionTreeClassifier, Types}
 
-/*
-* TODO: add toString method (calling getDepth on trees)
-        main: add function testTree & testRF
-*/
 
 class RandomForestClassifier(protected val nbTrees: Int,
                             protected val nbSamples: Int,
