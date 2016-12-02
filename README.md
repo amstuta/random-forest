@@ -28,4 +28,4 @@ The error rate of the two algorithms will be printed out.
 The dataset used in the examples is the "Census Income" dataset.
 It classifies incomes of approximately 32000 people into two categories: above and below 50,000$ a year.
 
-This dataset is distributed by the UCI machine learning repository and can be found here: http://archive.ics.uci.edu/ml/datasets/Adult.
+This dataset has been created by Ronny Kohavi and Barry Becker (1994) and is distributed by the UCI Machine Learning Repository: http://archive.ics.uci.edu/ml. It can be found here: http://archive.ics.uci.edu/ml/datasets/Adult.
